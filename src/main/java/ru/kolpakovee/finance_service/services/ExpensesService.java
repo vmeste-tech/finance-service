@@ -3,6 +3,7 @@ package ru.kolpakovee.finance_service.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kolpakovee.finance_service.clients.UserServiceClient;
+import ru.kolpakovee.finance_service.mappers.ExpensesMapper;
 import ru.kolpakovee.finance_service.records.ExpensesDto;
 import ru.kolpakovee.finance_service.repositories.ExpensesRepository;
 
@@ -26,7 +27,7 @@ public class ExpensesService {
 
         return expensesRepository.findByApartmentIdAndPeriod(apartmentId, start, end)
                 .stream()
-                .map(this::convertToDto)
+                .map(ExpensesMapper.INSTANCE::toDto)
                 .toList();
     }
 }
