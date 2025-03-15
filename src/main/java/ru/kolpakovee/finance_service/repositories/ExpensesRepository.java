@@ -15,8 +15,8 @@ public interface ExpensesRepository extends JpaRepository<ExpensesEntity, UUID> 
 
     @Query("SELECT e FROM ExpensesEntity e WHERE " +
             "e.apartmentId = :apartmentId AND " +
-            "(:start IS NULL OR e.createdDate >= :start) AND " +
-            "(:end IS NULL OR e.createdDate <= :end)")
+            "(CAST(:start AS timestamp) IS NULL OR e.createdDate >= :start) AND " +
+            "(CAST(:end AS timestamp) IS NULL OR e.createdDate <= :end)")
     List<ExpensesEntity> findByApartmentIdAndPeriod(
             @Param("apartmentId") UUID apartmentId,
             @Param("start") LocalDateTime start,
