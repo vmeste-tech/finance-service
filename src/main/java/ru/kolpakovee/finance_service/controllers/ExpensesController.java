@@ -2,10 +2,9 @@ package ru.kolpakovee.finance_service.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import ru.kolpakovee.finance_service.records.CreateExpenseRequest;
 import ru.kolpakovee.finance_service.records.ExpensesDto;
 import ru.kolpakovee.finance_service.services.ExpensesService;
 
@@ -29,5 +28,11 @@ public class ExpensesController {
         LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : null;
 
         return expensesService.getExpensesByPeriod(start, end);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ExpensesDto createExpenses(@RequestBody CreateExpenseRequest request) {
+        return expensesService.createExpense(request);
     }
 }

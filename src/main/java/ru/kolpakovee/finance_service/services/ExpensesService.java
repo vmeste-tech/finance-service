@@ -1,9 +1,12 @@
 package ru.kolpakovee.finance_service.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.kolpakovee.finance_service.clients.UserServiceClient;
+import ru.kolpakovee.finance_service.entities.ExpensesEntity;
 import ru.kolpakovee.finance_service.mappers.ExpensesMapper;
+import ru.kolpakovee.finance_service.records.CreateExpenseRequest;
 import ru.kolpakovee.finance_service.records.ExpensesDto;
 import ru.kolpakovee.finance_service.repositories.ExpensesRepository;
 
@@ -29,5 +32,17 @@ public class ExpensesService {
                 .stream()
                 .map(ExpensesMapper.INSTANCE::toDto)
                 .toList();
+    }
+
+    @Transactional
+    public ExpensesDto createExpense(CreateExpenseRequest request) {
+        ExpensesEntity expensesEntity = new ExpensesEntity();
+        expensesEntity.setAmount(request.amount());
+        expensesEntity.setDescription(request.description());
+        expensesEntity.setUserId(userServiceClient.getUserInfo().id());
+        expensesEntity.setApartmentId(userServiceClient.getApartmentByToken().apartmentId());
+        expensesEntity.setCreatedDate(LocalDateTime.now());
+
+        return ExpensesMapper.INSTANCE.toDto(expensesRepository.save(expensesEntity));
     }
 }

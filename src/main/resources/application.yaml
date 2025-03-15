@@ -4,6 +4,7 @@ server:
 spring:
   application:
     name: finance-service
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/finance_db}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
@@ -15,15 +16,15 @@ spring:
     properties:
       hibernate.format_sql: true
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/test-realm
+          issuer-uri: ${SECURITY_RESOURCE_SERVER_URL:http://localhost:8080/realms/vmeste.tech}
 
-keycloak:
-  auth-server-url: ${KEYCLOAK_AUTH_SERVER_URL:http://localhost:8080}
-  realm-name: ${KEYCLOAK_REALM_NAME:test-realm}
-  client-id: ${KEYCLOAK_CLIENT_ID:user-service}
-  client-secret: ${KEYCLOAK_CLIENT_SECRET:msEPsjCwHQp3Aa5DoVT187FMGYok8K61}
-
+integration:
+  services:
+    user-service:
+      url: ${INTEGRATION_USER_SERVICE_URL:http://localhost:8082}
+      name: ${INTEGRATION_USER_SERVICE_NAME:user-service}

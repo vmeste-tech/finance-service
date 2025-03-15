@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "apartments")
+@Table(name = "expenses")
 public class ExpensesEntity {
 
     @Id
@@ -25,6 +25,8 @@ public class ExpensesEntity {
     private UUID apartmentId;
 
     private double amount;
+
+    private String description;
 
     private LocalDateTime createdDate;
 }

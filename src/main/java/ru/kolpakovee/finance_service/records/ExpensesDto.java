@@ -7,6 +7,7 @@ public record ExpensesDto(
         UUID id,
         UUID userId,
         double amount,
+        String description,
         LocalDateTime createdDate
 ) {
 }
