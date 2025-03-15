@@ -1,0 +1,41 @@
+#databaseChangeLog:
+#  - changeSet:
+#      id: 1
+#      author: kolpakovee
+#      changes:
+#        - createTable:
+#            tableName: rules
+#            columns:
+#              - column:
+#                  name: id
+#                  type: UUID
+#                  constraints:
+#                    primaryKey: true
+#                    nullable: false
+#              - column:
+#                  name: apartment_id
+#                  type: UUID
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: name
+#                  type: VARCHAR(100)
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: description
+#                  type: VARCHAR(255)
+#              - column:
+#                  name: status
+#                  type: VARCHAR(50)
+#                  constraints:
+#                    nullable: false
+#              - column:
+#                  name: penalty_amount
+#                  type: float
+#                  constraints:
+#                    nullable: false
+#
+#      rollback:
+#        - dropTable:
+#            tableName: rules
