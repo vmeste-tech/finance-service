@@ -43,6 +43,9 @@ logs/
 *.jar
 docker-compose.override.yml
 
+# Gradle файлы
+.gradle/
+
 # IDE и другие конфигурации
 .vscode/
 *.swp
