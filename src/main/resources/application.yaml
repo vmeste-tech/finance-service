@@ -21,7 +21,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${RESOURCE_SERVER_ISSUER_URI:http://localhost:8080/realms/vmeste.tech}
+          issuer-uri: ${SECURITY_RESOURCE_SERVER_URL:http://localhost:8080/realms/vmeste.tech}
 
 integration:
   services:
