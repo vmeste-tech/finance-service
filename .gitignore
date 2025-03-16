@@ -43,10 +43,6 @@ logs/
 *.jar
 docker-compose.override.yml
 
-# Gradle файлы
-.gradle/
-gradle/wrapper/gradle-wrapper.properties
-
 # IDE и другие конфигурации
 .vscode/
 *.swp
