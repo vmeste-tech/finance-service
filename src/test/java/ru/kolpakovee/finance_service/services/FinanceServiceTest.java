@@ -64,7 +64,6 @@ class FinanceServiceTest {
                 .build();
         when(userServiceClient.getApartmentByToken()).thenReturn(apartmentInfo);
 
-        // Построим карту userNames внутри сервиса (на основе users)
         // Мокаем debtsRepository, возвращая список долгов
         DebtEntity debtEntity = new DebtEntity();
         debtEntity.setPeriod(period);
@@ -73,8 +72,7 @@ class FinanceServiceTest {
         debtEntity.setDebtorId(user1.id());
         debtEntity.setCreditorId(user2.id());
         List<DebtEntity> debtEntities = List.of(debtEntity);
-        when(debtsRepository.findAllByDebtorIdInAndPeriod(
-                anySet(), eq(period)))
+        when(debtsRepository.findAllByDebtorIdInAndPeriod(anySet(), eq(period)))
                 .thenReturn(debtEntities);
 
         // Для выбранного периода (январь 2022) range.end() будет давно, значит LocalDateTime.now() > range.end()
@@ -82,7 +80,7 @@ class FinanceServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        DebtDto dto = result.getFirst();
+        DebtDto dto = result.get(0);
         // Проверяем, что имена заменены через карту userNames
         assertEquals("Alice", dto.debtor());
         assertEquals("Bob", dto.creditor());
@@ -117,7 +115,6 @@ class FinanceServiceTest {
                 .build();
         when(userServiceClient.getApartmentByToken()).thenReturn(apartmentInfo);
 
-        // Для будущего периода LocalDateTime.now() не больше, чем range.end(), поэтому расчёт производится.
         // Мокаем расходы
         ExpensesEntity exp1 = new ExpensesEntity();
         exp1.setUserId(user1.id());
@@ -152,7 +149,7 @@ class FinanceServiceTest {
         when(penaltyServiceClient.getApartmentPenalties(any(UUID.class)))
                 .thenReturn(penalties);
 
-        // Чтобы не зависеть от логики DebtCalculator, мокируем его статический метод
+        // Мокаем статический метод DebtCalculator.calculateDebts
         try (MockedStatic<DebtCalculator> debtCalcMock =
                      mockStatic(DebtCalculator.class)) {
 
@@ -162,10 +159,13 @@ class FinanceServiceTest {
             Participant p3 = new Participant(user3.id(), user3.name(), 30.0, 0.0);
             List<Participant> participants = List.of(p1, p2, p3);
 
-            // Создадим фиктивный Transfer – допустим, p2 должен перевести p1 сумму 50.0
+            // Создаем фиктивный Transfer – допустим, p2 должен перевести p1 сумму 50.0
             Transfer transfer = new Transfer(p2, p1, 50.0);
             List<Transfer> transfers = List.of(transfer);
             debtCalcMock.when(() -> DebtCalculator.calculateDebts(anyList())).thenReturn(transfers);
+
+            // Настраиваем сохранение долгов, чтобы возвращался переданный список
+            when(debtsRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
 
             // Вызываем тестируемый метод
             List<DebtDto> result = financeService.getUserDebts(UUID.randomUUID(), period);
@@ -181,7 +181,7 @@ class FinanceServiceTest {
                     if (entities == null || entities.size() != 1) {
                         return false;
                     }
-                    DebtEntity entity = entities.getFirst();
+                    DebtEntity entity = entities.get(0);
                     return entity.getAmount() == 50.0 &&
                             entity.getPeriod() == period &&
                             entity.getStatus() == DebtStatus.UNPAID &&
@@ -193,7 +193,7 @@ class FinanceServiceTest {
             // Проверяем возвращаемый результат
             assertNotNull(result);
             assertEquals(1, result.size());
-            DebtDto dto = result.getFirst();
+            DebtDto dto = result.get(0);
             assertEquals(p2.getName(), dto.debtor());
             assertEquals(p1.getName(), dto.creditor());
             assertEquals(50.0, dto.amount());
