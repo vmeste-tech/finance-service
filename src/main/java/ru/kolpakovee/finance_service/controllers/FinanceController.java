@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.kolpakovee.finance_service.records.DebtDto;
-import ru.kolpakovee.finance_service.records.UserFinanceDto;
+import ru.kolpakovee.finance_service.records.Participant;
 import ru.kolpakovee.finance_service.services.FinanceService;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class FinanceController {
             description = "Возвращает финансовую информацию по пользователям за указанный период времени. Если даты не указаны, возвращаются данные за всё время."
     )
     @GetMapping("/{apartmentId}")
-    public List<UserFinanceDto> getUserFinances(@PathVariable UUID apartmentId, @RequestParam int period) {
+    public List<Participant> getUserFinances(@PathVariable UUID apartmentId, @RequestParam int period) {
         return financesService.getUserFinances(apartmentId, period);
     }
 

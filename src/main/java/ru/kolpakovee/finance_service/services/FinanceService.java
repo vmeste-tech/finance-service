@@ -45,6 +45,7 @@ public class FinanceService {
             if (!debts.isEmpty()) {
                 return debts.stream()
                         .map(d -> DebtDto.builder()
+                                .id(d.getId())
                                 .period(d.getPeriod())
                                 .status(d.getStatus())
                                 .debtor(userNames.get(d.getDebtorId()))
@@ -101,21 +102,54 @@ public class FinanceService {
                     return entity;
                 }).toList();
 
-        debtsRepository.saveAll(entities);
+        entities = debtsRepository.saveAll(entities);
 
-        return transfers.stream()
-                .map(t -> DebtDto.builder()
-                        .debtor(t.getDebtor().getName())
-                        .creditor(t.getCreditor().getName())
-                        .amount(t.getAmount())
-                        .status(DebtStatus.UNPAID)
-                        .period(period)
+        return entities.stream()
+                .map(d -> DebtDto.builder()
+                        .id(d.getId())
+                        .period(d.getPeriod())
+                        .status(d.getStatus())
+                        .debtor(userNames.get(d.getDebtorId()))
+                        .creditor(userNames.get(d.getCreditorId()))
+                        .amount(d.getAmount())
                         .build())
                 .toList();
     }
 
-    public List<UserFinanceDto> getUserFinances(UUID apartmentId, int period) {
-        throw new UnsupportedOperationException();
+    public List<Participant> getUserFinances(UUID apartmentId, int period) {
+        PeriodRange range = DateTimeUtils.getPeriodRange(period);
+        List<UserInfoDto> users = userServiceClient.getApartmentByToken().users();
+
+        // Получаем все расходы для квартиры за текущий месяц
+        List<ExpensesEntity> expenses = expensesRepository
+                .findByApartmentIdAndPeriod(apartmentId, range.start(), range.end());
+
+        // получить все штрафы за текущий месяц
+        List<PenaltyResponse> penalties = penaltyServiceClient.getApartmentPenalties(apartmentId)
+                .stream()
+                .filter(p -> p.assignedDate().isAfter(range.start()) && p.assignedDate().isBefore(range.end()))
+                .toList();
+
+        Map<UUID, Participant> participantMap = users.stream()
+                .collect(Collectors.toMap(UserInfoDto::id, u ->
+                        new Participant(u.id(), u.name(), 0.0, 0.0)));
+
+        // Обновляем данные по расходам
+        for (ExpensesEntity expense : expenses) {
+            UUID userId = expense.getUserId();
+            Participant participant = participantMap.get(userId);
+            participant.setExpense(participant.getExpense() + expense.getAmount());
+        }
+
+        // Обновляем данные по штрафам
+        for (PenaltyResponse penalty : penalties) {
+            UUID userId = penalty.user().id();
+            Participant participant = participantMap.get(userId);
+            participant.setFine(participant.getFine() + penalty.fineAmount());
+        }
+
+        // Итоговый список участников для расчёта долгов:
+        return new ArrayList<>(participantMap.values());
     }
 
     public DebtDto payDebt(UUID debtId) {
