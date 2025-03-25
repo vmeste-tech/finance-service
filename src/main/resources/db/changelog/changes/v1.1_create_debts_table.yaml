@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: kolpakovee
+      changes:
+        - createTable:
+            tableName: debts
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: debtor_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creditor_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: float
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: period
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: debts
+            columnNames: debtor_id, creditor_id, period
+            constraintName: uq_debtor_creditor_period
+      rollback:
+        - dropTable:
+            tableName: debts
