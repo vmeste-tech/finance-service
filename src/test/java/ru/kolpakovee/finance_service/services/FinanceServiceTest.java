@@ -43,22 +43,6 @@ class FinanceServiceTest {
     private FinanceService financeService;
 
     /**
-     * Вспомогательный класс для мокирования возвращаемого объекта от userServiceClient.getApartmentByToken().
-     * Предполагается, что у такого объекта есть метод users() возвращающий List<UserInfoDto>.
-     */
-    static class ApartmentInfoDtoStub {
-        private final List<UserInfoDto> users;
-
-        ApartmentInfoDtoStub(List<UserInfoDto> users) {
-            this.users = users;
-        }
-
-        public List<UserInfoDto> users() {
-            return users;
-        }
-    }
-
-    /**
      * Тест для случая, когда месяц уже завершён (текущая дата позже range.end()) и в БД найдены рассчитанные долги.
      */
     @Test
