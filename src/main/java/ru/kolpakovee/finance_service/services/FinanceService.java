@@ -55,7 +55,7 @@ public class FinanceService {
             }
         }
 
-        debtsRepository.deleteAllByDebtorIdIsInAndPeriod(userNames.keySet(), period);
+        debtsRepository.deleteAllByDebtorIdInAndPeriod(userNames.keySet(), period);
 
         // Получаем все расходы для квартиры за текущий месяц
         List<ExpensesEntity> expenses = expensesRepository

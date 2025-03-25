@@ -12,6 +12,6 @@ import java.util.UUID;
         url = "${integration.services.penalty-service.url}")
 public interface PenaltyServiceClient {
 
-    @GetMapping("/{apartmentId}")
+    @GetMapping("/api/v1/penalties/{apartmentId}")
     List<PenaltyResponse> getApartmentPenalties(@PathVariable UUID apartmentId);
 }
