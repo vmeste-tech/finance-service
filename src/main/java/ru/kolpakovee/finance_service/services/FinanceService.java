@@ -8,6 +8,8 @@ import ru.kolpakovee.finance_service.clients.UserServiceClient;
 import ru.kolpakovee.finance_service.entities.DebtEntity;
 import ru.kolpakovee.finance_service.entities.ExpensesEntity;
 import ru.kolpakovee.finance_service.enums.DebtStatus;
+import ru.kolpakovee.finance_service.exceptions.DebtPaymentException;
+import ru.kolpakovee.finance_service.exceptions.ResourceNotFoundException;
 import ru.kolpakovee.finance_service.records.*;
 import ru.kolpakovee.finance_service.repositories.DebtsRepository;
 import ru.kolpakovee.finance_service.repositories.ExpensesRepository;
@@ -152,7 +154,33 @@ public class FinanceService {
         return new ArrayList<>(participantMap.values());
     }
 
+    @Transactional
     public DebtDto payDebt(UUID debtId) {
-        throw new UnsupportedOperationException();
+        DebtEntity entity = debtsRepository.findById(debtId).orElseThrow(() ->
+                new ResourceNotFoundException("Долг с ID " + debtId + " не найден."));
+
+        PeriodRange range = DateTimeUtils.getPeriodRange(entity.getPeriod());
+
+        if (LocalDateTime.now().isBefore(range.end())) {
+            throw new DebtPaymentException("Долг не может быть оплачен до завершения периода.");
+        }
+
+        entity.setStatus(DebtStatus.PAID);
+        debtsRepository.save(entity); // Сохраняем обновленный статус
+
+        List<UserInfoDto> users = userServiceClient.getApartmentByToken().users();
+
+        // Построим карту: userId -> имя пользователя
+        Map<UUID, String> userNames = users.stream()
+                .collect(Collectors.toMap(UserInfoDto::id, UserInfoDto::name));
+
+        return DebtDto.builder()
+                .id(entity.getId())
+                .period(entity.getPeriod())
+                .status(entity.getStatus())
+                .debtor(userNames.get(entity.getDebtorId()))
+                .creditor(userNames.get(entity.getCreditorId()))
+                .amount(entity.getAmount())
+                .build();
     }
 }
