@@ -4,14 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "expenses")
-public class ExpensesEntity {
+@Table(name = "expenses_items")
+public class ExpenseItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -19,16 +18,9 @@ public class ExpensesEntity {
     private UUID id;
 
     @Column(updatable = false, nullable = false)
-    private UUID itemId;
+    private UUID apartmentId;
 
-    @Column(updatable = false, nullable = false)
-    private UUID userId;
-
-    private double amount;
+    private String name;
 
     private String description;
-
-    private String photoUrl;
-
-    private LocalDateTime createdDate;
 }

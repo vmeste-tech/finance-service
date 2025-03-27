@@ -13,13 +13,13 @@ import java.util.UUID;
 @Repository
 public interface ExpensesRepository extends JpaRepository<ExpensesEntity, UUID> {
 
-    @Query("SELECT e FROM ExpensesEntity e WHERE " +
-            "e.apartmentId = :apartmentId AND " +
-            "(CAST(:start AS timestamp) IS NULL OR e.createdDate >= :start) AND " +
-            "(CAST(:end AS timestamp) IS NULL OR e.createdDate <= :end)")
+    @Query("SELECT e FROM ExpensesEntity e " +
+            "JOIN ExpenseItemEntity ei ON e.itemId = ei.id " +
+            "WHERE ei.apartmentId = :apartmentId " +
+            "AND (:start IS NULL OR e.createdDate >= :start) " +
+            "AND (:end IS NULL OR e.createdDate <= :end)")
     List<ExpensesEntity> findByApartmentIdAndPeriod(
             @Param("apartmentId") UUID apartmentId,
             @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
-    );
+            @Param("end") LocalDateTime end);
 }

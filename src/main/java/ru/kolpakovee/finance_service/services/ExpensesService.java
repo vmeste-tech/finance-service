@@ -40,8 +40,9 @@ public class ExpensesService {
         expensesEntity.setAmount(request.amount());
         expensesEntity.setDescription(request.description());
         expensesEntity.setUserId(userServiceClient.getUserInfo().id());
-        expensesEntity.setApartmentId(userServiceClient.getApartmentByToken().apartmentId());
         expensesEntity.setCreatedDate(LocalDateTime.now());
+        expensesEntity.setPhotoUrl(request.photoUrl());
+        expensesEntity.setItemId(request.itemId());
 
         return ExpensesMapper.INSTANCE.toDto(expensesRepository.save(expensesEntity));
     }

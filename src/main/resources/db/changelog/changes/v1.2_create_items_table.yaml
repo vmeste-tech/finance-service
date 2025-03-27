@@ -1,0 +1,70 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: kolpakovee
+      changes:
+        - renameColumn:
+            tableName: expenses
+            oldColumnName: apartment_id
+            newColumnName: item_id
+            columnDataType: UUID
+        - addColumn:
+            tableName: expenses
+            columns:
+              - column:
+                  name: photo_url
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+      rollback:
+        - dropColumn:
+            tableName: expenses
+            columnName: photo_url
+        - renameColumn:
+            tableName: expenses
+            oldColumnName: item_id
+            newColumnName: apartment_id
+            columnDataType: UUID
+
+  - changeSet:
+      id: 4
+      author: kolpakovee
+      changes:
+        - createTable:
+            tableName: expenses_items
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: apartment_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+      rollback:
+        - dropTable:
+            tableName: expenses_items
+
+  - changeSet:
+      id: 5
+      author: kolpakovee
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: expenses
+            baseColumnNames: item_id
+            referencedTableName: expenses_items
+            referencedColumnNames: id
+            constraintName: fk_expenses_item
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: expenses
+            constraintName: fk_expenses_item
