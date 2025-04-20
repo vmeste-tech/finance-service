@@ -41,7 +41,8 @@ public class ExpensesService {
         expensesEntity.setDescription(request.description());
         expensesEntity.setUserId(userServiceClient.getUserInfo().id());
         expensesEntity.setCreatedDate(LocalDateTime.now());
-        expensesEntity.setPhotoUrl(request.photoUrl());
+        // TODO: save photo to S3
+        // expensesEntity.setPhotoUrl("");
         expensesEntity.setItemId(request.itemId());
 
         return ExpensesMapper.INSTANCE.toDto(expensesRepository.save(expensesEntity));

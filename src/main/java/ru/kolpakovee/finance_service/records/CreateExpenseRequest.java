@@ -5,7 +5,7 @@ import java.util.UUID;
 public record CreateExpenseRequest(
         double amount,
         String description,
-        String photoUrl,
+        String photoBase64,
         UUID itemId
 ) {
 }
