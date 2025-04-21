@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: finances_postgres
+    restart: always
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: finances_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - finances_pgdata:/var/lib/postgresql/data
+
+volumes:
+  finances_pgdata:
